@@ -1,18 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
+{% extends "layout.html" %}
 
-<form method="post">
-<legend>These people are playing:</legend>
-<table>
-<tr>
-{% for date_time, name, role in players %}
-<td>{{ name }}</td><td><input type="checkbox" name="{{ name }}" value={{ date_time }} checked/></td>
-</tr>
-{% endfor %}
-</table>
-<input type="submit" value="Assign roles" />
-</form>
+{% block head %}
 
-</body>
-</html>
+<link href="{{ url_for('static', filename='./css/toggle-switch-px.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='./css/toggle-switch-rem.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='./css/toggle-switch.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+
+  <body role="document">
+
+    <div class="container theme-showcase" role="main">
+
+      <div class="page-header">
+        <h1>These people are playing:</h1>
+      </div>
+
+	<form method="post">
+        <div class="col-md-6">
+          <table class="table table-striped">
+            <tbody>
+            {% for date_time, name, role in players %}
+              <tr>
+                <td>{{ name }}</td>
+                <td>
+
+				<div class='container'>
+				<div class="row">
+				  <div class="col-lg-4">
+				    <label class="switch-light progress progress-striped active" onclick="">
+				      <input type="checkbox" name="{{ name }}" value={{ date_time }} checked/>
+				      <span>
+				        <span>No</span>
+				        <span>Yes</span>
+				      </span>
+              		<a class="progress-bar progress-bar-success"></a>
+            		</label>
+          		  </div>
+		          </div>
+		          </div>
+
+			  	</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+	
+	<div class='container'>
+	<button class="btn btn-lg btn-primary btn-block" type="submit">Assign roles</button>
+	</form>
+	</div>
+
+
+
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='./js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='./js/docs.min.js') }}"></script>
+
+  </body>
+
+{% endblock %}

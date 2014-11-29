@@ -40,18 +40,22 @@ def assign_roles(database):
 @app.route('/')
 def index():
     if 'username' in session:
-        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 600,))
+        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
         players = c.fetchall()
         return render_template('player_waiting.html', players=players, name=session['username'])
-        return 'Logged in as {}. The other players are: {}. Next.'.format(escape(session['username']), str(players))
     return redirect(url_for('login'))
 
-@app.route('/role')
+@app.route('/role', methods=['GET', 'POST'])
 def role():
+    if request.method == 'POST':
+        session['date_time'] = unix_time(datetime.datetime.now())
+        c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], session['username']))
+        db.commit()
+        return redirect(url_for('index'))
     if 'username' in session:
         c.execute('''SELECT role FROM players WHERE date_time = ?''', (session['date_time'],))
         session['role'] = c.fetchone()[0]
-        return '{}, you are {}.'.format(session['username'], session['role'])
+        return render_template('player_role.html', name=session['username'], role=session['role'])
     return redirect(url_for('login'))
 
 @app.route('/host', methods=['GET', 'POST'])
@@ -67,7 +71,7 @@ def host():
         #return '{}'.format(str(request.form))
         return render_template('host_after.html', players=players)
     else:
-        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 600,))
+        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 800,))
         players = c.fetchall()
         return render_template('host_before.html', players=players)
 
@@ -76,15 +80,10 @@ def login():
     if request.method == 'POST':
         session['username'] = request.form['username']
         session['date_time'] = unix_time(datetime.datetime.now())
-        c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], request.form['username']))
+        c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], session['username']))
         db.commit()
         return redirect(url_for('index'))
-    return '''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Sign in>
-        </form>
-    '''
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():

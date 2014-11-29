@@ -1,15 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
+{% extends "layout.html" %}
+{% block body %}
+<body role="document">
 
-<legend>These are the roles of the players:</legend>
-<table>
-<tr>
-{% for date_time, name, role in players %}
-<td>{{ name }}</td><td>{{ role }}</td>
-</tr>
-{% endfor %}
-</table>
+    <div class="container theme-showcase" role="main">
+
+    <div class="page-header">
+        <h1>These are the players' roles:</h1>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+				{% for date_time, name, role in players %}
+				<td>{{ name }}</td>
+				{% if role == 'Mafia' %}
+				<td class='warning'>{{ role }}</td>
+				{% elif role == 'Villager' %}
+				<td class='active'>{{ role }}</td>
+				{% elif role == 'Sheriff' %}
+				<td class='success'>{{ role }}</td>
+				{% elif role == 'Angel' %}
+				<td class='success'>{{ role }}</td>				
+				{% endif %}
+              </tr>
+				{% endfor %}
+            </tbody>
+          </table>
+        </div>
+    
+    <div class="container">
 
 </body>
-</html>
+{% endblock %}
