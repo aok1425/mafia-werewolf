@@ -8,6 +8,8 @@ app = Flask(__name__)
 db = sqlite3.connect("test.db", check_same_thread=False)
 c = db.cursor()
 
+app.permanent_session_lifetime = 60 * 5 # seconds
+
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
     delta = dt - epoch
@@ -71,7 +73,7 @@ def host():
         #return '{}'.format(str(request.form))
         return render_template('host_after.html', players=players)
     else:
-        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 800,))
+        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
         players = c.fetchall()
         return render_template('host_before.html', players=players)
 
