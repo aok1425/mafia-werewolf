@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<legend>These are the roles of the players:</legend>
+<table>
+<tr>
+{% for date_time, name, role in players %}
+<td>{{ name }}</td><td>{{ role }}</td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

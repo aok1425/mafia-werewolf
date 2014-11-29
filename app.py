@@ -1,12 +1,17 @@
-from flask import Flask, session, redirect, url_for, escape, request
+from flask import Flask, session, redirect, url_for, escape, request, render_template
 import sqlite3
-from math import ceil
 import random
-from time import sleep
+import datetime
+from math import ceil
 
 app = Flask(__name__)
 db = sqlite3.connect("test.db", check_same_thread=False)
 c = db.cursor()
+
+def unix_time(dt):
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    delta = dt - epoch
+    return int(delta.total_seconds())
 
 def assign_roles(database):
     """Takes in a database result, chooses roles for each player, and updates the db."""
@@ -35,43 +40,49 @@ def assign_roles(database):
 @app.route('/')
 def index():
     if 'username' in session:
-        c.execute('''SELECT * FROM players WHERE date_time >= (strftime('%s', 'now') - 5 * 600)''')
+        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 600,))
         players = c.fetchall()
-        return 'Logged in as {}. The other players are: {}'.format(escape(session['username']), str(players))
-    return 'You are not logged in'
+        return render_template('player_waiting.html', players=players, name=session['username'])
+        return 'Logged in as {}. The other players are: {}. Next.'.format(escape(session['username']), str(players))
+    return redirect(url_for('login'))
+
+@app.route('/role')
+def role():
+    if 'username' in session:
+        c.execute('''SELECT role FROM players WHERE date_time = ?''', (session['date_time'],))
+        session['role'] = c.fetchone()[0]
+        return '{}, you are {}.'.format(session['username'], session['role'])
+    return redirect(url_for('login'))
 
 @app.route('/host', methods=['GET', 'POST'])
 def host():
-    c.execute('''SELECT * FROM players WHERE date_time >= (strftime('%s', 'now') - 5 * 600)''')
-    players = c.fetchall()
-
     if request.method == 'POST':
+        c.execute('''SELECT * FROM players WHERE {}'''.format('date_time = ' + ' OR date_time = '.join(request.form.values())))
+        players = c.fetchall()    
+            
         assign_roles(players)
 
-        c.execute('''SELECT * FROM players WHERE date_time >= (strftime('%s', 'now') - 5 * 600)''')
+        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = ' + ' OR date_time = '.join(request.form.values())))
         players = c.fetchall()
-        
-        return '''These are the roles of the players. \n {}'''.format(str(players))
+        #return '{}'.format(str(request.form))
+        return render_template('host_after.html', players=players)
     else:
-        return '''
-            These are the players:{}.
-            <form action="" method="post">
-                <p>Press submit, and the computer will assign players their roles.
-                <p><input type=submit value=Submit>
-            </form>
-        '''.format(str(players))
+        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 600,))
+        players = c.fetchall()
+        return render_template('host_before.html', players=players)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         session['username'] = request.form['username']
-        c.execute('''INSERT INTO players(name) VALUES(?)''', (request.form['username'],))
+        session['date_time'] = unix_time(datetime.datetime.now())
+        c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], request.form['username']))
         db.commit()
         return redirect(url_for('index'))
     return '''
         <form action="" method="post">
             <p><input type=text name=username>
-            <p><input type=submit value=Login>
+            <p><input type=submit value=Sign in>
         </form>
     '''
 

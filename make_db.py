@@ -2,11 +2,11 @@ import sqlite3
 
 db = sqlite3.connect("test.db")
 c = db.cursor()
+
 c.execute('''DROP TABLE IF EXISTS players''')
 db.commit()
 
-
-c.execute('''CREATE TABLE players(date_time timestamp default (strftime('%s', 'now')) PRIMARY KEY, name TEXT, role TEXT)''')
+c.execute('''CREATE TABLE players(date_time integer PRIMARY KEY, name TEXT, role TEXT)''')
 db.commit()
 """
 # Insert a date object into the database

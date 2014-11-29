@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<p>Logged in as {{ name }}.</p>
+
+<legend>The other players are:</legend>
+<table>
+<tr>
+{% for date_time, name, role in players %}
+<td>{{ name }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<p>After the narrator has assigned roles, click
+<a href={{ url_for('role') }}>next</a>.
+</p>
+
+</body>
+</html>

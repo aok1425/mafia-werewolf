@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<form method="post">
+<legend>These people are playing:</legend>
+<table>
+<tr>
+{% for date_time, name, role in players %}
+<td>{{ name }}</td><td><input type="checkbox" name="{{ name }}" value={{ date_time }} checked/></td>
+</tr>
+{% endfor %}
+</table>
+<input type="submit" value="Assign roles" />
+</form>
+
+</body>
+</html>
