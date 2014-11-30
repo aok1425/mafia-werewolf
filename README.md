@@ -1,4 +1,6 @@
 # Mafia (or Werewolf)
+[![screenshot](https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/screenshot.png)]()
+
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/aok1425/mafia-werewolf)
 
 This webapp facilitates player signing up and the distribution of roles. An added benefit of this webapp is that players can secretly choose the role they want.
@@ -12,8 +14,8 @@ The player presses View Role, and sees his or her identity.
 
 ## More details:
 
-* You need to manually refresh on the host page.
-* When players are choosing roles, priority is given to the person who signs up first.
+* You need to manually refresh on the host page to see new players who have signed up.
+* When 2 players sign up for Angel for example, priority is given to the person who signs up first.
 * When the narrator is assigning roles, only players who have signed up in the past 5 minutes are shown.
 
 ## Next steps:
