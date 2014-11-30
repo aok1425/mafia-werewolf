@@ -1,5 +1,15 @@
 # Mafia (or Werewolf)
-<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/screenshot.png" width="200">
+
+From player's point-of-view:
+
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-1.png" width="200">
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-2.png" width="200">
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-3.png" width="200">
+
+From narrator's point-of-view:
+
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/host-1.png" width="200">
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/host-2.png" width="200">
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/aok1425/mafia-werewolf)
 
