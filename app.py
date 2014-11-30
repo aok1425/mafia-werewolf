@@ -27,15 +27,14 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel):
     num_assigned_villagers = 0
 
     for num, row in enumerate(database):
-        if num_players > 6:
-            if row[-1] == 'Sheriff' and num_assigned_sheriff < num_sheriff:
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Sheriff' where date_time = {}".format(chosen_player_id))
-                num_assigned_sheriff += 1
-            if row[-1] == 'Angel' and num_assigned_angel < num_angel:
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Angel' where date_time = {}".format(chosen_player_id))
-                num_assigned_angel += 1
+        if row[-1] == 'Sheriff' and num_assigned_sheriff < num_sheriff:
+            chosen_player_id = database.pop(num)[0]
+            c.execute("update players set role = 'Sheriff' where date_time = {}".format(chosen_player_id))
+            num_assigned_sheriff += 1
+        if row[-1] == 'Angel' and num_assigned_angel < num_angel:
+            chosen_player_id = database.pop(num)[0]
+            c.execute("update players set role = 'Angel' where date_time = {}".format(chosen_player_id))
+            num_assigned_angel += 1
         if num_assigned_mafia < num_mafia:
             if row[-1] == 'Mafia':
                 chosen_player_id = database.pop(num)[0]
@@ -136,9 +135,10 @@ def host():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        #return str(request.form)
         session['username'] = request.form['username']
         session['date_time'] = unix_time(datetime.datetime.now())
-        c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], session['username']))
+        c.execute('''INSERT INTO players(date_time, name, preferred_role) VALUES(?,?,?)''', (session['date_time'], session['username'], request.form['preferred_role']))
         db.commit()
         return redirect(url_for('index'))
     return render_template('login.html')
