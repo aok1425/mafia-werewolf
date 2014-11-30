@@ -29,23 +29,31 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel):
     for num, row in enumerate(database): # to make random, shuffle tuples
         if num_assigned_sheriff < num_sheriff:
             if row[-1] == 'Sheriff':
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Sheriff' where date_time = {}".format(chosen_player_id))
+                chosen_player_values = database.pop(num)
+                chosen_player_id = chosen_player_values[0]
+                chosen_player_name = chosen_player_values[1]
+                c.execute("update players set role = 'Sheriff' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
                 num_assigned_sheriff += 1
         if num_assigned_angel < num_angel:
             if row[-1] == 'Angel':
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Angel' where date_time = {}".format(chosen_player_id))
+                chosen_player_values = database.pop(num)
+                chosen_player_id = chosen_player_values[0]
+                chosen_player_name = chosen_player_values[1]
+                c.execute("update players set role = 'Angel' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
                 num_assigned_angel += 1
         if num_assigned_mafia < num_mafia:
             if row[-1] == 'Mafia':
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Mafia' where date_time = {}".format(chosen_player_id))
+                chosen_player_values = database.pop(num)
+                chosen_player_id = chosen_player_values[0]
+                chosen_player_name = chosen_player_values[1]
+                c.execute("update players set role = 'Mafia' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
                 num_assigned_mafia += 1
         if num_assigned_villagers < num_villagers:
             if row[-1] == 'Villager':
-                chosen_player_id = database.pop(num)[0]
-                c.execute("update players set role = 'Villager' where date_time = {}".format(chosen_player_id))
+                chosen_player_values = database.pop(num)
+                chosen_player_id = chosen_player_values[0]
+                chosen_player_name = chosen_player_values[1]
+                c.execute("update players set role = 'Villager' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
                 num_assigned_villagers += 1
 
     for i in range(num_mafia - num_assigned_mafia):
@@ -99,14 +107,15 @@ def role():
 @app.route('/host', methods=['GET', 'POST'])
 def host():
     if request.method == 'POST':
-        #return str(request.form['mafia']) + str(request.form['sheriff']) + str(request.form['angel'])
+        #return str(request.form) + '<br>' + str(request.form.keys())
+        #return '''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"')
 
-        c.execute('''SELECT * FROM players WHERE {}'''.format('date_time = ' + ' OR date_time = '.join(request.form.values())))
+        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"'))
         players = c.fetchall()    
             
         assign_roles(players, int(request.form['mafia']), int(request.form['sheriff']), int(request.form['angel']))
 
-        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = ' + ' OR date_time = '.join(request.form.values())))
+        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"'))
         players = c.fetchall()
 
         players = [[num]+list(values) for num, values in list(enumerate(players, 1))]

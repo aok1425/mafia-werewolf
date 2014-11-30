@@ -10,9 +10,15 @@
 <body role="document">
 
 <div class="container theme-showcase" role="main">
+  <br>
+  <div class="container">
+    <form action="{{ url_for('host') }}">
+      <button type="submit" class="btn btn-primary btn-lg btn-block" href=>Check for new players</button>
+    </form>
+  </div>
 
   <div class="page-header">
-    <h1>These {{ num_players }} people are playing:</h1>
+    <h1>{{ num_players }} people are playing:</h1>
   </div>
 
   <form method="post">
@@ -22,7 +28,7 @@
         <div class="col-lg-4">
           {% for date_time, name, role, preferred_role in players %}
           <label class="switch-light progress progress-striped active" onclick="">
-            <input type="checkbox" name="{{ name }}" value={{ date_time }} checked/>
+            <input type="checkbox" name="{{ date_time }}" value={{ name }} checked/>
             <span>
               {{ name }}
               <span>No</span>
@@ -81,8 +87,7 @@
       <button class="btn btn-lg btn-primary btn-block" type="submit">Assign roles</button>
     </form>
   </div>
-
-</div>
+  <br></div>
 
 </div>
 <!-- /container -->
