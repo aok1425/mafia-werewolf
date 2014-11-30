@@ -1,5 +1,5 @@
 # Mafia (or Werewolf)
-<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/screenshot.png" align="left" width="200">
+<img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/screenshot.png" width="200">
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/aok1425/mafia-werewolf)
 
