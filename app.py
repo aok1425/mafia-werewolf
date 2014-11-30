@@ -15,70 +15,27 @@ def unix_time(dt):
     delta = dt - epoch
     return int(delta.total_seconds())
 
-# revise this to update based on name AND date_time, not just the latter
 def assign_roles(database, num_mafia, num_sheriff, num_angel):
     """Takes in a database result, chooses roles for each player, and updates the db."""
-    num_players = len(database)
-    num_villagers = num_players - num_mafia - num_sheriff - num_angel
+    counters = {}
+    counters['Villager'] = [len(database) - num_mafia - num_sheriff - num_angel, 0]
+    counters['Mafia'] = [num_mafia, 0]
+    counters['Sheriff'] = [num_sheriff, 0]
+    counters['Angel'] = [num_angel, 0]
 
-    num_assigned_sheriff = 0
-    num_assigned_angel = 0
-    num_assigned_mafia = 0
-    num_assigned_villagers = 0
+    for num, row in enumerate(database): # to make random, shuffle tuples # assign requested roles
+        for role in counters.keys():
+            if counters[role][1] < counters[role][0]:
+                if row[-1] == role:
+                    date_time, name, r1, r2 = database.pop(num)
+                    c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
+                    counters[role][1] += 1
 
-    for num, row in enumerate(database): # to make random, shuffle tuples
-        if num_assigned_sheriff < num_sheriff:
-            if row[-1] == 'Sheriff':
-                chosen_player_values = database.pop(num)
-                chosen_player_id = chosen_player_values[0]
-                chosen_player_name = chosen_player_values[1]
-                c.execute("update players set role = 'Sheriff' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-                num_assigned_sheriff += 1
-        if num_assigned_angel < num_angel:
-            if row[-1] == 'Angel':
-                chosen_player_values = database.pop(num)
-                chosen_player_id = chosen_player_values[0]
-                chosen_player_name = chosen_player_values[1]
-                c.execute("update players set role = 'Angel' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-                num_assigned_angel += 1
-        if num_assigned_mafia < num_mafia:
-            if row[-1] == 'Mafia':
-                chosen_player_values = database.pop(num)
-                chosen_player_id = chosen_player_values[0]
-                chosen_player_name = chosen_player_values[1]
-                c.execute("update players set role = 'Mafia' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-                num_assigned_mafia += 1
-        if num_assigned_villagers < num_villagers:
-            if row[-1] == 'Villager':
-                chosen_player_values = database.pop(num)
-                chosen_player_id = chosen_player_values[0]
-                chosen_player_name = chosen_player_values[1]
-                c.execute("update players set role = 'Villager' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-                num_assigned_villagers += 1
-
-    for i in range(num_mafia - num_assigned_mafia):
-        chosen_player = random.randint(0, len(database) - 1)
-        chosen_player_values = database.pop(chosen_player)
-        chosen_player_id = chosen_player_values[0]
-        chosen_player_name = chosen_player_values[1]
-        c.execute("update players set role = 'Mafia' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-
-    for i in range(num_sheriff - num_assigned_sheriff):
-        chosen_player = random.randint(0, len(database) - 1)
-        chosen_player_values = database.pop(chosen_player)
-        chosen_player_id = chosen_player_values[0]
-        chosen_player_name = chosen_player_values[1]
-        c.execute("update players set role = 'Sheriff' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-
-    for i in range(num_angel - num_assigned_angel):
-        chosen_player = random.randint(0, len(database) - 1)
-        chosen_player_values = database.pop(chosen_player)
-        chosen_player_id = chosen_player_values[0]
-        chosen_player_name = chosen_player_values[1]
-        c.execute("update players set role = 'Angel' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
-
-    for chosen_player_id, chosen_player_name in [row[:2] for row in database]:
-        c.execute("update players set role = 'Villager' where date_time = {} and name = '{}'".format(chosen_player_id, chosen_player_name))
+    for role in counters.keys(): # randomly assign rest of roles
+        for i in range(counters[role][0] - counters[role][1]):
+            chosen_player = random.randint(0, len(database) - 1)
+            date_time, name, r1, r2 = database.pop(chosen_player)
+            c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
 
     db.commit()
 
