@@ -13,23 +13,23 @@ From narrator's point-of-view:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/aok1425/mafia-werewolf)
 
-This webapp facilitates player signing up and the distribution of roles. An added benefit of this webapp is that players can secretly choose the role they want.
+This webapp facilitates player sign-up and role distribution. An added benefit is that players can secretly choose the role they want.
 
 ## How to use:
-With one player per device, have each player visit [mafiaalex.herokuapp.com](mafiaalex.herokuapp.com). The player inputs his or her name, then waits for everyone else to sign up. 
+With one player per device, have each player visit [mafiaalex.herokuapp.com](http://mafiaalex.herokuapp.com). The player inputs his or her name, then waits for everyone else to sign up. 
 
-The narrator visits [mafiaalex.herokuapp.com/host](mafiaalex.herokuapp.com/host) and waits for all players to sign up. The narrator chooses the number of mafia, sheriffs, and angels, then presses Assign Roles.
+The narrator visits [mafiaalex.herokuapp.com/host](http://mafiaalex.herokuapp.com/host) and waits for all players to sign up. The narrator chooses the number of mafia, sheriffs, and angels, then presses Assign Roles.
 
 The player presses View Role, and sees his or her identity.
 
 ## More details:
 
-* You need to manually refresh on the host page to see new players who have signed up.
-* When 2 players sign up for Angel for example, priority is given to the person who signs up first.
-* When the narrator is assigning roles, only players who have signed up in the past 5 minutes are shown.
+* You need to manually refresh the host page to see new players who have signed up.
+* If 2 players sign up for a role with only 1 spot, priority is given to the person who signs up first.
+* When the narrator views players, only those who have signed up in the past 5 minutes are shown.
 
 ## Next steps:
 * Randomize priority when players choose preferred roles.
-* When the narrator is choosing the number of mafia and other roles, set default settings for each number of players instead of the default always being the left choice.
-* Make the preferred role form on the sign in page conform to Bootstrap specifications.
+* Set smart defaults for number of special characters, not just the left choice.
+* Make the preferred role form box on the sign in page conform to Bootstrap specifications.
 * Allow voting via the webapp? Have a timer on the webapp for each round?
