@@ -1,4 +1,5 @@
 # Mafia (or Werewolf)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/aok1425/mafia-werewolf)
 
 This webapp facilitates player signing up and the distribution of roles. An added benefit of this webapp is that players can secretly choose the role they want.
 
