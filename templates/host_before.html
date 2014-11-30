@@ -1,73 +1,98 @@
 {% extends "layout.html" %}
 
 {% block head %}
-
 <link href="{{ url_for('static', filename='./css/toggle-switch-px.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='./css/toggle-switch-rem.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='./css/toggle-switch.css') }}" rel="stylesheet">
-
 {% endblock %}
 
 {% block body %}
+<body role="document">
 
-  <body role="document">
+<div class="container theme-showcase" role="main">
 
-    <div class="container theme-showcase" role="main">
+  <div class="page-header">
+    <h1>These people are playing:</h1>
+  </div>
 
-      <div class="page-header">
-        <h1>These people are playing:</h1>
-      </div>
+  <form method="post">
 
-	<form method="post">
-        <div class="col-md-6">
-          <table class="table table-striped">
-            <tbody>
-            {% for date_time, name, role in players %}
-              <tr>
-                <td>{{ name }}</td>
-                <td>
-
-				<div class='container'>
-				<div class="row">
-				  <div class="col-lg-4">
-				    <label class="switch-light progress progress-striped active" onclick="">
-				      <input type="checkbox" name="{{ name }}" value={{ date_time }} checked/>
-				      <span>
-				        <span>No</span>
-				        <span>Yes</span>
-				      </span>
-              		<a class="progress-bar progress-bar-success"></a>
-            		</label>
-          		  </div>
-		          </div>
-		          </div>
-
-			  	</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    <div class='container'>
+      <div class="row">
+        <div class="col-lg-4">
+          {% for date_time, name, role, preferred_role in players %}
+          <label class="switch-light progress progress-striped active" onclick="">
+            <input type="checkbox" name="{{ name }}" value={{ date_time }} checked/>
+            <span>
+              {{ name }}
+              <span>No</span>
+              <span>Yes</span>
+            </span>
+            <a class="progress-bar progress-bar-success"></a>
+          </label>
+          {% endfor %}
         </div>
       </div>
-	
-	<div class='container'>
-	<button class="btn btn-lg btn-primary btn-block" type="submit">Assign roles</button>
-	</form>
-	</div>
 
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>How many Mafia?</h3>
+          <div class="switch-toggle well">
+            <input id="mafia1" name="mafia" type="radio" value={{ num_mafia[0] }} checked>
+            <label for="mafia1" onclick="">{{ num_mafia[0] }}</label>
 
-
+            <input id="mafia2" name="mafia" type="radio" value={{ num_mafia[1] }}>
+            <label for="mafia2" onclick="">{{ num_mafia[1] }}</label>
+            <a class="btn btn-primary disabled"></a>
+          </div>
+        </div>
       </div>
 
-    </div> <!-- /container -->
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>How many Sheriffs?</h3>
+          <div class="switch-toggle well">
+            <input id="sheriff1" name="sheriff" type="radio" value={{ num_sheriff[0] }} checked>
+            <label for="sheriff1" onclick="">{{ num_sheriff[0] }}</label>
 
-    <!-- Bootstrap core JavaScript
+            <input id="sheriff2" name="sheriff" type="radio" value={{ num_sheriff[1] }}>
+            <label for="sheriff2" onclick="">{{ num_sheriff[1] }}</label>
+            <a class="btn btn-primary disabled"></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>How many Angels?</h3>
+          <div class="switch-toggle well">
+            <input id="angel1" name="angel" type="radio" value={{ num_angel[0] }} checked>
+            <label for="angel1" onclick="">{{ num_angel[0] }}</label>
+
+            <input id="angel2" name="angel" type="radio" value={{ num_angel[1] }}>
+            <label for="angel2" onclick="">{{ num_angel[1] }}</label>
+            <a class="btn btn-primary disabled"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class='container'>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Assign roles</button>
+    </form>
+  </div>
+
+</div>
+
+</div>
+<!-- /container -->
+
+<!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='./js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='./js/docs.min.js') }}"></script>
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='./js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='./js/docs.min.js') }}"></script>
 
-  </body>
-
+</body>
 {% endblock %}

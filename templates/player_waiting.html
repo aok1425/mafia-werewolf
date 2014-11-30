@@ -11,12 +11,12 @@
       </div>
 
       <div class="page-header">
-        <h1>These players are ready:</h1>
+        <h1>These {{ num }} players are ready:</h1>
       </div>
         <div class="col-md-6">
           <table class="table table-striped">
             <tbody>
-            {% for date_time, name, role in players %}
+            {% for date_time, name, role, preferred_role in players %}
               <tr>
                 <td>{{ name }}</td>
               </tr>
@@ -32,9 +32,13 @@
     <div class="container">
 
       <div class="starter-template">
-        <p class='lead'>After the narrator has assigned roles, click
-        <a href={{ url_for('role') }}>here</a>.</p>
-      </div>
+        <p class='lead'>After the narrator has assigned roles,</p>
+
+    
+    <form action="{{ url_for('role') }}">
+      <button type="submit" class="btn btn-primary btn-lg btn-block" href=>View Role</button>
+    </form>
+          </div>
 
     </div><!-- /.container -->
 
