@@ -1,0 +1,10 @@
+{
+  "name": "Mafia",
+  "description": "Webapp to facilitate the parlor game Mafia/Werewolf",
+  "keywords": [
+    "mafia",
+    "werewolf"
+  ],
+  "addons": ["Flask"],
+  "env": {}
+}
