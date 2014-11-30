@@ -5,7 +5,7 @@ import datetime
 from math import ceil
 
 app = Flask(__name__)
-db = sqlite3.connect("test.db", check_same_thread=False)
+db = sqlite3.connect("main.db", check_same_thread=False)
 c = db.cursor()
 
 app.permanent_session_lifetime = 60 * 5 # seconds
@@ -26,15 +26,17 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel):
     num_assigned_mafia = 0
     num_assigned_villagers = 0
 
-    for num, row in enumerate(database):
-        if row[-1] == 'Sheriff' and num_assigned_sheriff < num_sheriff:
-            chosen_player_id = database.pop(num)[0]
-            c.execute("update players set role = 'Sheriff' where date_time = {}".format(chosen_player_id))
-            num_assigned_sheriff += 1
-        if row[-1] == 'Angel' and num_assigned_angel < num_angel:
-            chosen_player_id = database.pop(num)[0]
-            c.execute("update players set role = 'Angel' where date_time = {}".format(chosen_player_id))
-            num_assigned_angel += 1
+    for num, row in enumerate(database): # to make random, shuffle tuples
+        if num_assigned_sheriff < num_sheriff:
+            if row[-1] == 'Sheriff':
+                chosen_player_id = database.pop(num)[0]
+                c.execute("update players set role = 'Sheriff' where date_time = {}".format(chosen_player_id))
+                num_assigned_sheriff += 1
+        if num_assigned_angel < num_angel:
+            if row[-1] == 'Angel':
+                chosen_player_id = database.pop(num)[0]
+                c.execute("update players set role = 'Angel' where date_time = {}".format(chosen_player_id))
+                num_assigned_angel += 1
         if num_assigned_mafia < num_mafia:
             if row[-1] == 'Mafia':
                 chosen_player_id = database.pop(num)[0]
@@ -78,7 +80,7 @@ def index():
         c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
         players = c.fetchall()
 
-        return render_template('player_waiting.html', players=players, name=session['username'], num=len(players) + 1)
+        return render_template('player_waiting.html', players=players, name=session['username'], num=len(players))
     return redirect(url_for('login'))
 
 @app.route('/role', methods=['GET', 'POST'])
