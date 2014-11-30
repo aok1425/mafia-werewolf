@@ -5,6 +5,6 @@
     "mafia",
     "werewolf"
   ],
-  "addons": ["flask"],
+  "addons": [],
   "env": {}
 }
