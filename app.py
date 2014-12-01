@@ -16,12 +16,14 @@ def unix_time(dt):
     return int(delta.total_seconds())
 
 def assign_roles(database, num_mafia, num_sheriff, num_angel):
-    """Takes in a database result, chooses roles for each player, and updates the db."""
+    """Takes in a database result, shuffles rows, chooses roles for each player, and updates the db."""
     counters = {}
     counters['Villager'] = [len(database) - num_mafia - num_sheriff - num_angel, 0]
     counters['Mafia'] = [num_mafia, 0]
     counters['Sheriff'] = [num_sheriff, 0]
     counters['Angel'] = [num_angel, 0]
+
+    random.shuffle(database)
 
     for num, row in enumerate(database): # to make random, shuffle tuples # assign requested roles
         for role in counters.keys():

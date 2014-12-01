@@ -25,13 +25,11 @@ The player presses View Role, and sees his or her identity.
 ## More details:
 
 * You need to manually refresh the host page to see new players who have signed up.
-* If 2 players sign up for a role with only 1 spot, priority is given to the person who signs up first.
 * When the narrator views players, only those who have signed up in the past 5 minutes are shown.
 
 ## Next steps:
-* Randomize priority when players choose preferred roles.
 * If narrator says player is not playing, have that player removed from player waiting screen as well.
 * Set smart defaults for number of special characters, not just the left choice.
 * Make the preferred role form box on the sign in page conform to Bootstrap specifications.
 * Allow voting via the webapp? Have a timer on the webapp for each round?
-* Write formal tests in Flask. Possible tests are: many players signing up for the same role; what happens after a round.
+* Write formal tests in Flask. Possible tests are: many players signing up for the same role; what happens after a round; multiple players with same name.
