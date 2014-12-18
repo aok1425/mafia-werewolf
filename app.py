@@ -8,14 +8,14 @@ app = Flask(__name__)
 db = sqlite3.connect("main.db", check_same_thread=False)
 c = db.cursor()
 
-app.permanent_session_lifetime = 60 * 5 # seconds
+app.permanent_session_lifetime = 60 * 60 * 1.5 # seconds, so 1.5 hours
 
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
     delta = dt - epoch
     return int(delta.total_seconds())
 
-def assign_roles(database, num_mafia, num_sheriff, num_angel):
+def assign_roles(database, num_mafia, num_sheriff, num_angel, columns):
     """Takes in a database result, shuffles rows, chooses roles for each player, and updates the db."""
     counters = {}
     counters['Villager'] = [len(database) - num_mafia - num_sheriff - num_angel, 0]
@@ -25,26 +25,58 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel):
 
     random.shuffle(database)
 
-    for num, row in enumerate(database): # to make random, shuffle tuples # assign requested roles
+    for num, row in enumerate(database): # assign requested roles
         for role in counters.keys():
-            if counters[role][1] < counters[role][0]:
-                if row[-1] == role:
-                    date_time, name, r1, r2 = database.pop(num)
+            if counters[role][columns.index('name')] < counters[role][columns.index('date_time')]:
+                if row[columns.index('preferred_role')] == role:
+                    row = database.pop(num)
+                    date_time, name = row[:2]
                     c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
-                    counters[role][1] += 1
+                    counters[role][c.index('name')] += 1
 
     for role in counters.keys(): # randomly assign rest of roles
-        for i in range(counters[role][0] - counters[role][1]):
+        for i in range(counters[role][columns.index('date_time')] - counters[role][columns.index('name')]):
             chosen_player = random.randint(0, len(database) - 1)
-            date_time, name, r1, r2 = database.pop(chosen_player)
+            row = database.pop(chosen_player)
+            date_time, name = row[:2]
             c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
 
     db.commit()
 
 @app.route('/')
-def index():
+def start(): 
+    return render_template('create_or_join_game.html')
+
+@app.route('/create', methods=['GET', 'POST'])
+def create_game():
+    if request.method == 'POST':
+        session['game'] = request.form['game']
+        session['date_time'] = unix_time(datetime.datetime.now())
+        c.execute('''INSERT INTO games(date_time, game) VALUES(?, ?)''', (session['date_time'], session['game']))
+        db.commit()
+
+        return redirect(url_for('host'))
+    else:
+        c.execute('''SELECT * FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        games = c.fetchall()        
+
+        return render_template('create_game.html', current_games=games)
+
+@app.route('/choose', methods=['GET', 'POST'])
+def choose_game():
+    if request.method == 'POST':
+        session['game'] = request.form.keys()[0] # revise HTML form to get value, not key 
+        return redirect(url_for('login'))
+    else:
+        c.execute('''SELECT * FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        games = c.fetchall()
+
+        return render_template('choose_game.html', games=games)    
+
+@app.route('/signin')
+def signin():
     if 'username' in session:
-        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        c.execute('''SELECT * FROM players WHERE date_time >= ? AND game = ?''', (unix_time(datetime.datetime.now()) - 5 * 60, session['game']))
         players = c.fetchall()
 
         return render_template('player_waiting.html', players=players, name=session['username'], num=len(players))
@@ -66,13 +98,11 @@ def role():
 @app.route('/host', methods=['GET', 'POST'])
 def host():
     if request.method == 'POST':
-        #return str(request.form) + '<br>' + str(request.form.keys())
-        #return '''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"')
-
         c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"'))
         players = c.fetchall()    
-            
-        assign_roles(players, int(request.form['mafia']), int(request.form['sheriff']), int(request.form['angel']))
+        columns = [i[0] for i in c.description]
+
+        assign_roles(players, int(request.form['mafia']), int(request.form['sheriff']), int(request.form['angel']), columns=columns)
 
         c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"'))
         players = c.fetchall()
@@ -81,7 +111,7 @@ def host():
         
         return render_template('host_after.html', players=players)
     else:
-        c.execute('''SELECT * FROM players WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        c.execute('''SELECT * FROM players WHERE date_time >= ? AND game = ?''', (unix_time(datetime.datetime.now()) - 5 * 60, session['game']))
         players = c.fetchall()
 
         num_players = len(players)
@@ -105,25 +135,17 @@ def host():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        #return str(request.form)
         session['username'] = request.form['username']
         session['date_time'] = unix_time(datetime.datetime.now())
-        c.execute('''INSERT INTO players(date_time, name, preferred_role) VALUES(?,?,?)''', (session['date_time'], session['username'], request.form['preferred_role']))
+        c.execute('''INSERT INTO players(date_time, name, preferred_role, game) VALUES(?,?,?,?)''', (session['date_time'], session['username'], request.form['preferred_role'], session['game']))
         db.commit()
-        return redirect(url_for('index'))
-    return render_template('login.html')
 
-@app.route('/login/<string:name>', methods=['GET'])
-def login_w_name(name):
-    session['username'] = name
-    session['date_time'] = unix_time(datetime.datetime.now())
-    c.execute('''INSERT INTO players(date_time, name) VALUES(?, ?)''', (session['date_time'], session['username']))
-    db.commit()
-    return redirect(url_for('index'))
+        return redirect(url_for('signin'))
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
+    """remove the username from the session if it's there"""
     session.pop('username', None)
     return redirect(url_for('index'))
 

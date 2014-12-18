@@ -20,7 +20,7 @@
         </thead>
         <tbody>
           <tr>
-            {% for num, date_time, name, role, preferred_role in players %}
+            {% for num, date_time, name, role, preferred_role, _ in players %}
             <td>{{ num }}</td>            
             <td>{{ name }}</td>
             {% if role == 'Mafia' %}
@@ -38,11 +38,6 @@
       </table>
     </div>
 
-    <div class="container">
-      <form action="{{ url_for('host') }}">
-        <button type="submit" class="btn btn-primary btn-lg btn-block" href=>Host next round?</button>
-      </form>
-    </div>
 <br>
 </body>
     {% endblock %}

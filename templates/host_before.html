@@ -8,12 +8,12 @@
 
 {% block body %}
 <body role="document">
-
 <div class="container theme-showcase" role="main">
   <br>
+  {% if num_players > 0 %}
   <div class="container">
     <form action="{{ url_for('host') }}">
-      <button type="submit" class="btn btn-primary btn-lg btn-block" href=>Check for new players</button>
+      <button type="submit" class="btn btn-primary btn-lg btn-block">Check for new players</button>
     </form>
   </div>
 
@@ -26,7 +26,7 @@
     <div class='container'>
       <div class="row">
         <div class="col-lg-4">
-          {% for date_time, name, role, preferred_role in players %}
+          {% for date_time, name, _, _, _ in players %}
           <label class="switch-light progress progress-striped active" onclick="">
             <input type="checkbox" name="{{ date_time }}" value={{ name }} checked/>
             <span>
@@ -89,6 +89,19 @@
   </div>
   <br></div>
 
+{% else %}
+
+<div class="page-header">
+  <h1>No one has signed up yet.</h1>
+</div>
+
+<div class="container">
+  <form action="{{ url_for('host') }}">
+    <button type="submit" class="btn btn-primary btn-lg btn-block" href=>Check for new players</button>
+  </form>
+</div>
+
+{% endif %}
 </div>
 <!-- /container -->
 
