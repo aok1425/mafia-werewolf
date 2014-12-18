@@ -1,15 +1,18 @@
 # Mafia (or Werewolf)
 
 Home screen:
+
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/start.png" width="200">
 
 From player's point-of-view:
+
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-00.png" width="200">
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-1.png" width="200">
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-2.png" width="200">
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/user-3.png" width="200">
 
 From narrator's point-of-view:
+
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/host-00.png" width="200">
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/host-1.png" width="200">
 <img src="https://raw.githubusercontent.com/aok1425/mafia-werewolf/master/static/images/host-2.png" width="200">
