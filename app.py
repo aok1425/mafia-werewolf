@@ -23,16 +23,23 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel, columns):
     counters['Sheriff'] = [num_sheriff, 0]
     counters['Angel'] = [num_angel, 0]
 
+    rows_to_remove = [] # very hacky. hopefully i replace this w a more elegant solution
+
     random.shuffle(database)
 
     for num, row in enumerate(database): # assign requested roles
         for role in counters.keys():
             if counters[role][columns.index('name')] < counters[role][columns.index('date_time')]:
                 if row[columns.index('preferred_role')] == role:
-                    row = database.pop(num)
+                    row = database[num]
+                    rows_to_remove.append(row)
                     date_time, name = row[:2]
+                    print "  set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name)
                     c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
-                    counters[role][c.index('name')] += 1
+                    counters[role][columns.index('name')] += 1
+
+    for row in rows_to_remove:
+        database.remove(row)
 
     for role in counters.keys(): # randomly assign rest of roles
         for i in range(counters[role][columns.index('date_time')] - counters[role][columns.index('name')]):
@@ -104,7 +111,7 @@ def host():
 
         assign_roles(players, int(request.form['mafia']), int(request.form['sheriff']), int(request.form['angel']), columns=columns)
 
-        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join(request.form.keys()) + '"'))
+        c.execute('''SELECT * FROM players WHERE {} ORDER BY role'''.format('date_time = "' + '" OR date_time = "'.join([i for i in request.form.keys() if i[0] == "1"]) + '"')) # i[0] == 1 lasts until 2033
         players = c.fetchall()
 
         players = [[num]+list(values) for num, values in list(enumerate(players, 1))]
@@ -135,6 +142,7 @@ def host():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        return request.form['preferred_role']
         session['username'] = request.form['username']
         session['date_time'] = unix_time(datetime.datetime.now())
         c.execute('''INSERT INTO players(date_time, name, preferred_role, game) VALUES(?,?,?,?)''', (session['date_time'], session['username'], request.form['preferred_role'], session['game']))
@@ -142,6 +150,13 @@ def login():
 
         return redirect(url_for('signin'))
     return render_template('login.html')
+
+@app.route('/test_login/<name>/<preferred_role>/<game>')
+def test_login(name, preferred_role, game):
+    c.execute('''INSERT INTO players(date_time, name, preferred_role, game) VALUES(?,?,?,?)''', (unix_time(datetime.datetime.now()), name, preferred_role, game))
+    db.commit()
+
+    return "Added {}, requesting {} role, into game {}".format(name, preferred_role, game)
 
 @app.route('/logout')
 def logout():
