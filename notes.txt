@@ -1,2 +1,1 @@
-write tests to verify when users requests certain roles
-write sth (mock?) to quickly add users for testing, and their desired roles
+write automated tests to verify when users requests certain roles(?)

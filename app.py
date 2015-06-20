@@ -142,7 +142,6 @@ def host():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        return request.form['preferred_role']
         session['username'] = request.form['username']
         session['date_time'] = unix_time(datetime.datetime.now())
         c.execute('''INSERT INTO players(date_time, name, preferred_role, game) VALUES(?,?,?,?)''', (session['date_time'], session['username'], request.form['preferred_role'], session['game']))
