@@ -21,8 +21,9 @@ for role in number_players:
 def create_players(players, url="127.0.0.1:5000"):
 	for role in players:
 		for name in players[role]:
-			# print "http://127.0.0.1:5000/test_login/{}/{}/test".format(name, role)
+			print "http://{}/test_login/{}/{}/test".format(url, name, role)
 			requests.get("http://{}/test_login/{}/{}/test".format(url, name, role))
 			# time.sleep(1)
 
-create_players(players)
+if __name__=="__main__":
+	create_players(players)
