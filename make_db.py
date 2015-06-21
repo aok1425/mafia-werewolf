@@ -12,7 +12,7 @@ db.commit()
 c.execute('''DROP TABLE IF EXISTS games''')
 db.commit()
 
-c.execute('''CREATE TABLE games(date_time integer, game TEXT, PRIMARY KEY (date_time, game))''')
+c.execute('''CREATE TABLE games(date_time integer, game TEXT, phone_number integer, PRIMARY KEY (date_time, game))''')
 db.commit()
 
 db.close()

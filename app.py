@@ -34,7 +34,6 @@ def assign_roles(database, num_mafia, num_sheriff, num_angel, columns):
                     row = database[num]
                     rows_to_remove.append(row)
                     date_time, name = row[:2]
-                    print "  set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name)
                     c.execute("update players set role = '{}' where date_time = {} and name = '{}'".format(role, date_time, name))
                     counters[role][columns.index('name')] += 1
 
@@ -59,12 +58,12 @@ def create_game():
     if request.method == 'POST':
         session['game'] = request.form['game']
         session['date_time'] = unix_time(datetime.datetime.now())
-        c.execute('''INSERT INTO games(date_time, game) VALUES(?, ?)''', (session['date_time'], session['game']))
+        c.execute('''INSERT INTO games(date_time, game, phone_number) VALUES(?, ?, ?)''', (session['date_time'], session['game'], request.form['phone_number']))
         db.commit()
 
         return redirect(url_for('host'))
     else:
-        c.execute('''SELECT * FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        c.execute('''SELECT date_time, game FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
         games = c.fetchall()        
 
         return render_template('create_game.html', current_games=games)
@@ -75,7 +74,7 @@ def choose_game():
         session['game'] = request.form.keys()[0] # revise HTML form to get value, not key 
         return redirect(url_for('login'))
     else:
-        c.execute('''SELECT * FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
+        c.execute('''SELECT date_time, game FROM games WHERE date_time >= ?''', (unix_time(datetime.datetime.now()) - 5 * 60,))
         games = c.fetchall()
 
         return render_template('choose_game.html', games=games)    
@@ -99,7 +98,15 @@ def role():
     if 'username' in session:
         c.execute('''SELECT role FROM players WHERE date_time = ? AND name = ?''', (session['date_time'], session['username']))
         session['role'] = c.fetchone()[0]
-        return render_template('player_role.html', name=session['username'], role=session['role'], phone_number="617-124-2343")
+
+        c.execute('''SELECT phone_number FROM games WHERE game = ? ORDER BY date_time DESC''', (session['game'],))
+        phone_number = c.fetchone()[0]
+
+        if phone_number:
+            phone_number = str(phone_number)
+            phone_number = "{}-{}-{}".format(phone_number[:3],phone_number[3:6],phone_number[6:])
+
+        return render_template('player_role.html', name=session['username'], role=session['role'], phone_number=phone_number)
     return redirect(url_for('login'))
 
 @app.route('/host', methods=['GET', 'POST'])
