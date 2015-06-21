@@ -4,7 +4,9 @@
     <div class="container theme-showcase" role="main">
         <!-- Main jumbotron for a primary marketing message or call to action -->
         <div class="jumbotron">
-            <h1>{{ name }}, you are <font size="2">{{ role }}</font></h1>
+            <h1>{{ name }}, you are <font size="2">{{ role }}</font>
+            <br>Questions? Text the host at <a href="tel:{{ phone_number }}">{{ phone_number }}</a></h1>
+            <a href="sms:{{ phone_number }}">{{ phone_number }}</a>
         </div>
         <form action="{{ url_for('role') }}">
           <button type="submit" class="btn btn-primary btn-lg btn-block" href=>Refresh</button>

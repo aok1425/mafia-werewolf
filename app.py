@@ -99,7 +99,7 @@ def role():
     if 'username' in session:
         c.execute('''SELECT role FROM players WHERE date_time = ? AND name = ?''', (session['date_time'], session['username']))
         session['role'] = c.fetchone()[0]
-        return render_template('player_role.html', name=session['username'], role=session['role'])
+        return render_template('player_role.html', name=session['username'], role=session['role'], phone_number="617-124-2343")
     return redirect(url_for('login'))
 
 @app.route('/host', methods=['GET', 'POST'])
